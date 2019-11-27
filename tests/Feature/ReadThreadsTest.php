@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Reply;
+use App\Thread;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,7 +14,8 @@ class ReadThreadsTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->thread = factory('App\Thread')->create();
+
+        $this->thread = create(Thread::class);
     }
 
     public function test_a_user_can_view_all_threads()
@@ -31,8 +34,13 @@ class ReadThreadsTest extends TestCase
 
     public function test_a_user_can_read_replies_that_are_associated_with_a_thread()
     {
-        $reply = factory('App\Reply')->create(['thread_id' => $this->thread->id]);
-        $this->get($this->thread->path())
-            ->assertSee($reply->body);
+        // Given a thread with replies
+        $reply = create(Reply::class, ['thread_id' => $this->thread->id]);
+
+        // When we visit that thread's page
+        $reponse = $this->get($this->thread->path());
+
+        // Then we should see the replies of that thread
+        $reponse->assertSee($reply->body);
     }
 }

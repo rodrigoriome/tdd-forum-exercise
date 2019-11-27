@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Reply;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -12,7 +13,7 @@ class ReplyTest extends TestCase
 
     public function test_it_has_an_owner()
     {
-        $reply = factory('App\Reply')->create();
+        $reply = create(Reply::class);
         $this->assertInstanceOf(User::class, $reply->owner);
     }
 }

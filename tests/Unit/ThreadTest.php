@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Thread;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,7 +17,8 @@ class ThreadTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->thread = factory('App\Thread')->create();
+
+        $this->thread = create(Thread::class);
     }
 
     public function test_it_has_replies()
