@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Channel;
 use App\Thread;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -35,5 +36,41 @@ class CreateThreadsTest extends TestCase
         $this->get(route('threads.index'))
             ->assertSee($thread->title)
             ->assertSee($thread->body);
+    }
+
+    public function test_a_thread_require_a_valid_title()
+    {
+        $this->publishThread(['title' => null])
+            ->assertSessionHasErrors('title');
+    }
+
+    public function test_a_thread_require_a_valid_body()
+    {
+        $this->publishThread(['body' => null])
+            ->assertSessionHasErrors('body');
+    }
+
+    public function test_a_thread_require_a_valid_channel()
+    {
+        factory(Channel::class, 2)->create();
+
+        // Assert it is required
+        $this->publishThread(['channel_id' => null])
+            ->assertSessionHasErrors('channel_id');
+
+        // Assert the given channel exists
+        $this->publishThread(['channel_id' => 999])
+            ->assertSessionHasErrors('channel_id');
+    }
+
+    private function publishThread(array $overrides = [])
+    {
+        $this->signIn();
+        $this->withExceptionHandling();
+        $thread = make(Thread::class, $overrides)->toArray();
+
+        $request = $this->post(route('threads.store'), $thread);
+
+        return $request;
     }
 }

@@ -20,7 +20,7 @@ class ParticipateInForumTest extends TestCase
         $reply = create(Reply::class)->toArray();
         $this->post(route('reply.store', [
             $thread->channel,
-            $thread
+            $thread,
         ]), $reply)
             ->assertRedirect(route('login'));
     }
@@ -33,13 +33,22 @@ class ParticipateInForumTest extends TestCase
         // When we hit the endpoint to submit a reply on a thread
         $thread = create(Thread::class);
         $reply = make(Reply::class);
-        $this->post(route('reply.store', [
-            $thread->channel,
-            $thread,
-        ]), $reply->toArray());
+        $this->post(route('reply.store', [$thread->channel, $thread]), $reply->toArray());
 
         // Then we should see our reply on that thread
         $this->get($thread->path())
             ->assertSee($reply->body);
+    }
+
+    public function test_a_reply_has_a_valid_body()
+    {
+        $this->signIn();
+        $this->withExceptionHandling();
+
+        $thread = create(Thread::class);
+        $reply = make(Reply::class, ['body' => null]);
+
+        $this->post(route('reply.store', [$thread->channel, $thread]), $reply->toArray())
+            ->assertSessionHasErrors('body');
     }
 }
