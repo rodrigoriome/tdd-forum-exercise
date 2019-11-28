@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Thread;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,15 +12,13 @@ class CreateThreadsTest extends TestCase
 
     public function test_guests_may_not_create_threads()
     {
-        $this->expectException(AuthenticationException::class);
+        $this->withExceptionHandling();
         $thread = make(Thread::class)->toArray();
-        $this->post('/threads', $thread);
-    }
 
-    public function test_guests_may_not_see_the_create_threads_page()
-    {
-        $this->withExceptionHandling()
-            ->get(route('threads.create'))
+        $this->post(route('threads.store'), $thread)
+            ->assertRedirect(route('login'));
+
+        $this->get(route('threads.create'))
             ->assertRedirect(route('login'));
     }
 
@@ -32,10 +29,10 @@ class CreateThreadsTest extends TestCase
 
         // When we hit the endpoint to create a new thread
         $thread = make(Thread::class);
-        $this->post('/threads', $thread->toArray());
+        $this->post(route('threads.store'), $thread->toArray());
 
         // Then we should see the new thread on that thread page
-        $this->get('/threads')
+        $this->get(route('threads.index'))
             ->assertSee($thread->title)
             ->assertSee($thread->body);
     }

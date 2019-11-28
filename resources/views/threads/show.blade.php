@@ -28,7 +28,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <hr>
-            <form action="{{ route('add_reply_to_thread', $thread->id) }}" method="post">
+            <form action="{{ route('reply.store', [$thread->channel->slug, $thread->id]) }}" method="post">
                 @csrf
                 <div class="form-group">
                     <textarea class="form-control" name="body" rows="5" placeholder="Have something to say?"></textarea>
