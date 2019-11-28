@@ -45,7 +45,7 @@
             "Tests\\": "tests/"
         },
         "files": [
-            "tests/helpers.php"
+            "tests/Utils/helpers.php"
         ]
     },
     "minimum-stability": "dev",

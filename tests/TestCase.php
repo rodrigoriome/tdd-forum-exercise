@@ -3,10 +3,17 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Tests\Utils\ExceptionHandler;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication;
+    use CreatesApplication, ExceptionHandler;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->disableExceptionHandling();
+    }
 
     protected function signIn($user = null)
     {
