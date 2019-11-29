@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Channel;
 use App\Reply;
 use App\Thread;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,5 +43,20 @@ class ReadThreadsTest extends TestCase
 
         // Then we should see the replies of that thread
         $reponse->assertSee($reply->body);
+    }
+
+    public function test_a_user_can_filter_threads_by_channel()
+    {
+        // Given we have a few threads on different channels
+        $channel = create(Channel::class);
+        $threadInChannel = create(Thread::class, ['channel_id' => $channel->id]);
+        $threadNotInChannel = create(Thread::class);
+
+        // When we visit a channel URI
+        $request = $this->get(route('channels.index', [$channel->slug]));
+
+        // Then we should see only the threads that belongs to that channel
+        $request->assertSee($threadInChannel->title)
+            ->assertDontSee($threadNotInChannel->title);
     }
 }

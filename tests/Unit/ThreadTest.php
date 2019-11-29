@@ -32,7 +32,7 @@ class ThreadTest extends TestCase
         $this->assertInstanceOf(User::class, $this->thread->user);
     }
 
-    public function test_a_thread_has_replies()
+    public function test_a_thread_can_have_replies()
     {
         $this->assertInstanceOf(Collection::class, $this->thread->replies);
     }
