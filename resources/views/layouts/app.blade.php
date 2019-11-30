@@ -38,7 +38,10 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto d-flex align-items-center">
                         <li class="nav-item">
-                            <a href="/threads">All Threads</a>
+                            <a class="nav-link" href="{{ route('threads.index') }}">All Threads</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('threads.create') }}">New Thread</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#!" role="button" data-toggle="dropdown">
@@ -46,7 +49,9 @@
                             </a>
                             <div class="dropdown-menu">
                                 @foreach (App\Channel::all() as $channel)
-                                <a class="dropdown-item" href="/threads/{{ $channel->slug }}">{{ $channel->name }}</a>
+                                <a class="dropdown-item" href="{{ route('channels.index', $channel->slug) }}">
+                                    {{ $channel->name }}
+                                </a>
                                 @endforeach
                             </div>
                         </li>
