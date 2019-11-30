@@ -15,7 +15,7 @@
                                 <option value {{ old('channel_id') ?: 'selected' }} hidden disabled>
                                     Please select a channel
                                 </option>
-                                @foreach (App\Channel::all() as $channel)
+                                @foreach ($channels as $channel)
                                 <option {{ old('channel_id') == $channel->id ?? 'selected' }} value="{{$channel->id}}">
                                     {{$channel->name}}
                                 </option>
