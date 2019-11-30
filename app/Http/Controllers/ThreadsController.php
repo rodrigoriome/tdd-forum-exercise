@@ -23,7 +23,12 @@ class ThreadsController extends Controller
      */
     public function index()
     {
+        $userId = request('userId');
         $threads = Thread::latest()->get();
+
+        if ($userId && $userId > 0) {
+            $threads = $threads->where('id', $userId);
+        }
 
         return view('threads.index', ['threads' => $threads]);
     }
@@ -49,7 +54,7 @@ class ThreadsController extends Controller
         $this->validate($request, [
             'title' => ['required'],
             'body' => ['required'],
-            'channel_id' => ['required', 'exists:channels,id']
+            'channel_id' => ['required', 'exists:channels,id'],
         ]);
 
         $thread = Thread::create([

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Channel;
 use App\Reply;
 use App\Thread;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -58,5 +59,20 @@ class ReadThreadsTest extends TestCase
         // Then we should see only the threads that belongs to that channel
         $request->assertSee($threadInChannel->title)
             ->assertDontSee($threadNotInChannel->title);
+    }
+
+    public function test_a_user_can_filter_threads_by_user_id()
+    {
+        // Given we have a few threads from different users
+        $user = create(User::class);
+        $threadFromUser = create(Thread::class, ['user_id' => $user->id]);
+        $threadNotFromUser = create(Thread::class);
+
+        // When we visit the threads page passing a user id through query string
+        $request = $this->get(route('threads.index', ['userId' => $user->id]));
+
+        // Then we should see only the threads that belongs to that user
+        $request->assertSee($threadFromUser->title)
+            ->assertDontSee($threadNotFromUser->title);
     }
 }
