@@ -5,17 +5,16 @@
                 <a href="#">{{ $reply->owner->name }}</a>
                 said {{ $reply->created_at->diffForHumans() }}
             </span>
-            {{-- @auth --}}
+            @auth
             <span class="ml-auto">
                 <form action="{{ route('favorites.store', $reply->id) }}" method="post">
                     @csrf
-                    <button type="submit" class="btn btn-outline-secondary"
-                        {{ $reply->isFavoritedByUser() ? 'disabled' : '' }}>
-                        {{ $reply->favorites()->count() }} {{ Str::plural('favorite', $reply->favorites()->count()) }}
+                    <button type="submit" class="btn btn-outline-secondary">
+                        {{ $reply->favorites_count }} {{ Str::plural('favorite', $reply->favorites_count) }}
                     </button>
                 </form>
             </span>
-            {{-- @endauth --}}
+            @endauth
         </div>
     </div>
     <div class="card-body">
