@@ -23,9 +23,8 @@ abstract class Filter
         $this->builder = $builder;
 
         foreach ($this->getRequestFilters() as $filter => $value) {
-            $funcName = 'By' . ucfirst($filter);
-            if (method_exists($this, $funcName)) {
-                $this->$funcName($value);
+            if (method_exists($this, $filter)) {
+                $this->$filter($value);
             }
         }
 

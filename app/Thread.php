@@ -8,9 +8,21 @@ class Thread extends Model
 {
     protected $guarded = [];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('replyCount', function ($builder) {
+            $builder->withCount('replies');
+        });
+    }
+
     public function path()
     {
-        return "/threads/{$this->channel->slug}/{$this->id}";
+        return route('threads.show', [
+            $this->channel->slug,
+            $this->id,
+        ], false);
     }
 
     public function replies()

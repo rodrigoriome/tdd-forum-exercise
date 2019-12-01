@@ -4,9 +4,9 @@ namespace App\Filters;
 
 class ThreadFilter extends Filter
 {
-    protected $filters = ['userId'];
+    protected $filters = ['userId', 'popular'];
 
-    public function byUserId($id)
+    public function userId($id)
     {
         return $this->builder->where('user_id', $id);
     }
