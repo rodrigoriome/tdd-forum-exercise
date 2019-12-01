@@ -10,4 +10,9 @@ class ThreadFilter extends Filter
     {
         return $this->builder->where('user_id', $id);
     }
+
+    public function popular()
+    {
+        return $this->builder->orderBy('replies_count', 'desc');
+    }
 }

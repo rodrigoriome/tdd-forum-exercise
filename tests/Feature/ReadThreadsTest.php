@@ -13,6 +13,8 @@ class ReadThreadsTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $thread;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -74,5 +76,30 @@ class ReadThreadsTest extends TestCase
         // Then we should see only the threads that belongs to that user
         $request->assertSee($threadFromUser->title)
             ->assertDontSee($threadNotFromUser->title);
+    }
+
+    public function test_a_user_can_filter_threads_by_popularity()
+    {
+        // Given we have 3 threads
+        // With 2 replies, 3 replies and 0 replies, respectively.
+        $threadWithTwoReplies = create(Thread::class);
+        create(Reply::class, ['thread_id' => $threadWithTwoReplies->id], 2);
+
+        $threadWithThreeReplies = create(Thread::class);
+        create(Reply::class, ['thread_id' => $threadWithThreeReplies->id], 3);
+
+        $threadWithNoReplies = $this->thread;
+
+        // When we filter all threads by popularity,
+        $response = $this->get(route('threads.index', [
+            'popular' => 1,
+        ]));
+
+        // Then they should be returned from most replies to least.
+        $response->assertSeeInOrder([
+            $threadWithThreeReplies->title,
+            $threadWithTwoReplies->title,
+            $threadWithNoReplies->title,
+        ]);
     }
 }
