@@ -44,4 +44,18 @@ class FavoritesTest extends TestCase
 
         $this->assertCount(1, $reply->favorites);
     }
+
+    public function test_a_reply_can_be_unfavorited()
+    {
+        // Given we have a reply with 1 favorite
+        $this->signIn();
+        $reply = create(Reply::class);
+        $this->post(route('favorites.store', $reply->id));
+
+        // When we hit the endpoint to remove that favorite
+        $this->delete(route('favorites.destroy', $reply->id));
+
+        // Then the reply should have no favorites
+        $this->assertCount(0, $reply->favorites);
+    }
 }
