@@ -11,6 +11,7 @@
                         posted:
                         {{ $thread->title }}
                     </span>
+                    @can('update', $thread)
                     <span>
                         <form action="{{ route('threads.destroy', [$thread->channel, $thread]) }}" method="post">
                             @method('DELETE')
@@ -18,6 +19,7 @@
                             <button type="submit" class="btn btn-outline-danger">Delete Thread</button>
                         </form>
                     </span>
+                    @endcan
                 </div>
                 <div class="card-body">
                     {{ $thread->body }}

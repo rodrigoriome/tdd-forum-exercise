@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Channel;
 use App\Reply;
 use App\Thread;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -24,16 +25,6 @@ class CreateThreadsTest extends TestCase
             ->assertRedirect(route('login'));
     }
 
-    /** @test */
-    public function test_guests_may_not_delete_threads()
-    {
-        $this->withExceptionHandling();
-
-        $thread = create(Thread::class);
-
-        $this->deleteThread($thread)->assertRedirect(route('login'));
-    }
-
     public function test_an_authenticated_user_can_create_threads()
     {
         // Given we have a signed in user
@@ -50,12 +41,12 @@ class CreateThreadsTest extends TestCase
     }
 
     /** @test */
-    public function test_a_thread_can_be_deleted()
+    public function test_an_authorized_user_can_delete_threads()
     {
-        $this->signIn();
+        $user = $this->signIn();
 
         // Given we have a thread
-        $thread = create(Thread::class);
+        $thread = create(Thread::class, ['user_id' => $user->id]);
 
         // And it's present in the database
         $this->assertDatabaseHas('threads', $thread->toArray());
@@ -68,18 +59,12 @@ class CreateThreadsTest extends TestCase
     }
 
     /** @test */
-    // public function test_a_thread_may_only_be_deleted_by_those_who_have_permission()
-    // {
-    //     // TODO:
-    // }
-
-    /** @test */
     public function test_all_thread_replies_are_deleted_upon_thread_deletion()
     {
-        $this->signIn();
+        $user = $this->signIn();
 
         // Given we have a thread with replies
-        $thread = create(Thread::class);
+        $thread = create(Thread::class, ['user_id' => $user->id]);
         $reply = create(Reply::class, ['thread_id' => $thread->id]);
 
         // When we delete that thread
@@ -90,6 +75,26 @@ class CreateThreadsTest extends TestCase
 
         // Then none of the associated replies should exist on database
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+    }
+
+    /** @test */
+    public function test_unauthorized_users_may_not_delete_threads()
+    {
+        $this->withExceptionHandling();
+
+        // Given we have a thread created by a random user
+        $thread = create(Thread::class);
+
+        // When a guest tries to delete that thread
+        // Then it should redirected and that thread should still exist on database
+        $this->deleteThread($thread)->assertRedirect(route('login'));
+        $this->assertDatabaseHas('threads', ['id' => $thread->id]);
+
+        // And When another user tries to delete that thread
+        // Then it should redirected and that thread should still exist on database
+        $this->signIn();
+        $this->deleteThread($thread)->assertStatus(403);
+        $this->assertDatabaseHas('threads', ['id' => $thread->id]);
     }
 
     public function test_a_thread_require_a_valid_title()
