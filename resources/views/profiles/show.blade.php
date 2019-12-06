@@ -10,26 +10,12 @@
                     <small>since {{ $profileUser->created_at->diffForHumans() }}</small>
                 </h1>
             </div>
-
-            {{ $threads->links() }}
-            @foreach ($threads as $thread)
-            <div class="card my-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>
-                        <a href="{{ route('profiles.show', $thread->user->name) }}">{{ $thread->user->name }}</a>
-                        posted:
-                        <a href="{{ $thread->path() }}">{{ $thread->title }}</a>
-                    </span>
-                    <span>
-                        {{ $thread->created_at->diffForHumans() }}
-                    </span>
-                </div>
-                <div class="card-body">
-                    {{ $thread->body }}
-                </div>
-            </div>
+            @foreach ($activities as $date => $activity)
+            <h3>{{ $date }}</h3>
+            @foreach ($activity as $record)
+            @include("profiles.activities.{$record->type}", ['activity' => $record])
             @endforeach
-            {{ $threads->links() }}
+            @endforeach
         </div>
     </div>
 </div>
