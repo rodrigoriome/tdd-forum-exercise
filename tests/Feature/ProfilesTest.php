@@ -28,8 +28,9 @@ class ProfilesTest extends TestCase
     /** @test */
     public function test_a_profile_displays_all_threads_of_the_associated_user()
     {
-        create(Thread::class, ['user_id' => $this->user->id], 5);
-        $threads = Thread::where('user_id', $this->user->id)->get();
+        $this->signIn($this->user);
+
+        $threads = create(Thread::class, ['user_id' => $this->user->id], 5);
 
         foreach ($threads as $thread) {
             $this->get(route('profiles.show', $this->user->name))
