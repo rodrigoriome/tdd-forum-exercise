@@ -1,9 +1,6 @@
 @component('profiles.activities.activity', compact('activity'))
 @slot('heading')
-<a href="{{ route('profiles.show', $activity->subject->user->name) }}">
-    {{ $activity->subject->user->name }}
-</a>
-published
+{{ $activity->subject->user->name }} published
 <a href="{{ $activity->subject->path() }}">
     {{ $activity->subject->title }}
 </a>
