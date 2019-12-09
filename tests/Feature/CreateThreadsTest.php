@@ -61,20 +61,21 @@ class CreateThreadsTest extends TestCase
     /** @test */
     public function test_all_thread_replies_are_deleted_upon_thread_deletion()
     {
-        $user = $this->signIn();
+        $this->signIn();
 
         // Given we have a thread with replies
-        $thread = create(Thread::class, ['user_id' => $user->id]);
+        $thread = create(Thread::class, ['user_id' => auth()->id()]);
         $reply = create(Reply::class, ['thread_id' => $thread->id]);
 
         // When we delete that thread
-        $this->delete(route('threads.destroy', [
-            $thread->channel,
-            $thread,
-        ]));
+        $this->deleteThread($thread);
 
         // Then none of the associated replies should exist on database
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+        $this->assertDatabaseMissing('activities', [
+            'subject_id' => $reply->id,
+            'subject_type' => get_class($reply),
+        ]);
     }
 
     /** @test */

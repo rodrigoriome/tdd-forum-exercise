@@ -10,6 +10,10 @@ trait RecordsActivity
             return;
         }
 
+        static::deleting(function ($model) {
+            $model->activity()->delete();
+        });
+
         foreach (static::getRecordableEvents() as $event) {
             static::$event(function ($model) use ($event) {
                 $model->recordActivity($event);

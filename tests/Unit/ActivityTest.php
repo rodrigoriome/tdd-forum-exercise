@@ -7,6 +7,11 @@ use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+/**
+ * Activity Test
+ *
+ * Each test should log in a user so that the activity works properly
+ */
 class ActivityTest extends TestCase
 {
     use RefreshDatabase;
@@ -74,5 +79,19 @@ class ActivityTest extends TestCase
         $this->assertCount(2, $feed);
         $this->assertContains(Carbon::now()->format('Y-m-d'), $feed->keys());
         $this->assertContains(Carbon::now()->subWeek()->format('Y-m-d'), $feed->keys());
+    }
+
+    /** @test */
+    public function test_the_activity_is_dropped_upon_subject_deletion()
+    {
+        $this->signIn();
+
+        $subject = create(Thread::class);
+        $subject->delete();
+
+        $this->assertDatabaseMissing('activities', [
+            'subject_id' => $subject->id,
+            'subject_type' => get_class($subject),
+        ]);
     }
 }
