@@ -18,11 +18,38 @@ class ParticipateInForumTest extends TestCase
 
         $thread = create(Thread::class);
         $reply = create(Reply::class)->toArray();
-        $this->post(route('reply.store', [
+        $this->post(route('replies.store', [
             $thread->channel,
             $thread,
         ]), $reply)
             ->assertRedirect(route('login'));
+    }
+
+    /** @test */
+    public function test_guests_may_not_delete_replies()
+    {
+        $this->withExceptionHandling();
+
+        $reply = create(Reply::class);
+
+        $this->delete(route('replies.destroy', $reply->id))
+            ->assertRedirect(route('login'));
+
+        $this->signIn();
+        $this->delete(route('replies.destroy', $reply->id))
+            ->assertStatus(403);
+    }
+
+    /** @test */
+    public function test_authorized_users_can_delete_replies()
+    {
+        $this->signIn();
+
+        $reply = create(Reply::class, ['user_id' => auth()->id()]);
+
+        $this->delete(route('replies.destroy', $reply->id))->assertStatus(302);
+
+        $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
     }
 
     public function test_an_authenticated_user_may_participate_in_forum_threads()
@@ -33,7 +60,7 @@ class ParticipateInForumTest extends TestCase
         // When we hit the endpoint to submit a reply on a thread
         $thread = create(Thread::class);
         $reply = make(Reply::class);
-        $this->post(route('reply.store', [$thread->channel, $thread]), $reply->toArray());
+        $this->post(route('replies.store', [$thread->channel, $thread]), $reply->toArray());
 
         // Then we should see our reply on that thread
         $this->get($thread->path())
@@ -48,7 +75,7 @@ class ParticipateInForumTest extends TestCase
         $thread = create(Thread::class);
         $reply = make(Reply::class, ['body' => null]);
 
-        $this->post(route('reply.store', [$thread->channel, $thread]), $reply->toArray())
+        $this->post(route('replies.store', [$thread->channel, $thread]), $reply->toArray())
             ->assertSessionHasErrors('body');
     }
 }
