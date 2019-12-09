@@ -16,7 +16,7 @@ class RepliesController extends Controller
     public function store(Channel $channel, Thread $thread, Request $request)
     {
         $this->validate($request, [
-            'body' => ['required']
+            'body' => ['required'],
         ]);
 
         $thread->addReply([
@@ -24,6 +24,6 @@ class RepliesController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        return back();
+        return back()->with('flash', 'Your reply has been left.');
     }
 }
