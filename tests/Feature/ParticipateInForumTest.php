@@ -52,6 +52,38 @@ class ParticipateInForumTest extends TestCase
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
     }
 
+    /** @test */
+    public function test_authorized_users_can_update_replies()
+    {
+        $this->signIn();
+
+        $reply = create(Reply::class, ['user_id' => auth()->id()]);
+
+        $this->patch(route('replies.update', $reply->id), [
+            'body' => 'Hello there',
+        ])->assertStatus(200);
+
+        $this->assertDatabaseHas('replies', [
+            'id' => $reply->id,
+            'body' => 'Hello there',
+        ]);
+    }
+
+    /** @test */
+    public function test_guests_may_not_update_replies()
+    {
+        $this->withExceptionHandling();
+
+        $reply = create(Reply::class);
+
+        $this->patch(route('replies.update', $reply->id))
+            ->assertRedirect(route('login'));
+
+        $this->signIn();
+        $this->patch(route('replies.update', $reply->id))
+            ->assertStatus(403);
+    }
+
     public function test_an_authenticated_user_may_participate_in_forum_threads()
     {
         // Given we have a authenticated user
