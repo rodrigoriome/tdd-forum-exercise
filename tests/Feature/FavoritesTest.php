@@ -50,7 +50,7 @@ class FavoritesTest extends TestCase
         // Given we have a reply with 1 favorite
         $this->signIn();
         $reply = create(Reply::class);
-        $this->post(route('favorites.store', $reply->id));
+        $reply->favorite();
 
         // When we hit the endpoint to remove that favorite
         $this->delete(route('favorites.destroy', $reply->id));

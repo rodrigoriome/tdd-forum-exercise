@@ -8,12 +8,7 @@
                 </span>
                 @auth
                 <span class="ml-auto">
-                    <form action="{{ route('favorites.store', $reply->id) }}" method="post">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-secondary">
-                            {{ $reply->favorites_count }} {{ Str::plural('favorite', $reply->favorites_count) }}
-                        </button>
-                    </form>
+                    <favorite :reply="{{ $reply }}" />
                 </span>
                 @endauth
             </div>
