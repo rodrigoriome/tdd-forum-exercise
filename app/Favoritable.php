@@ -4,6 +4,13 @@ namespace App;
 
 trait Favoritable
 {
+    protected static function bootFavoritable()
+    {
+        static::deleting(function ($model) {
+            $model->favorites->each->delete();
+        });
+    }
+
     public function favorites()
     {
         return $this->morphMany(Favorite::class, 'favorited');
@@ -38,10 +45,8 @@ trait Favoritable
 
     public function unfavorite()
     {
-        $reply = $this->favorites()->where('user_id', auth()->id());
+        $attributes = ['user_id' => auth()->id()];
 
-        if ($reply->exists()) {
-            $reply->delete();
-        }
+        $this->favorites()->where($attributes)->get()->each->delete();
     }
 }
