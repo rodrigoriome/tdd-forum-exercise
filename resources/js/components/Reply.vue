@@ -4,7 +4,8 @@ export default {
   data() {
     return {
       editing: false,
-      body: this.attributes.body
+      body: this.attributes.body,
+      deleted: false
     };
   },
   methods: {
@@ -17,6 +18,12 @@ export default {
           this.editing = false;
           flash("Reply updated.");
         });
+    },
+    destroy() {
+      axios.delete(`/replies/${this.attributes.id}`).then(({ data }) => {
+        this.deleted = true;
+        flash(data.status);
+      });
     }
   }
 };
