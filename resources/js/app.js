@@ -8,6 +8,12 @@ require("./bootstrap");
 
 window.Vue = require("vue");
 
+window.Vue.prototype.authorize = function(handler) {
+  let { user } = window.App;
+
+  return user ? handler(user) : false;
+};
+
 window.EventBus = new Vue();
 window.flash = message => window.EventBus.$emit("flash", message);
 
@@ -23,7 +29,8 @@ window.flash = message => window.EventBus.$emit("flash", message);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component("flash", require("./components/Flash.vue").default);
-Vue.component("reply", require("./components/Reply.vue").default);
+
+Vue.component("thread-view", require("./pages/Thread.vue").default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -32,5 +39,5 @@ Vue.component("reply", require("./components/Reply.vue").default);
  */
 
 const app = new Vue({
-    el: "#app"
+  el: "#app"
 });
