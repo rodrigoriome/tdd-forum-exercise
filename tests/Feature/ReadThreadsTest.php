@@ -102,4 +102,18 @@ class ReadThreadsTest extends TestCase
             $threadWithNoReplies->title,
         ]);
     }
+
+    /** @test */
+    public function test_a_user_can_request_all_replies_for_a_given_thread()
+    {
+        $this->signIn();
+
+        $thread = create(Thread::class);
+        create(Reply::class, ['thread_id' => $thread->id], 5);
+
+        $response = $this->get($thread->path() . '/replies')->json();
+
+        $this->assertCount(1, $response['data']);
+        $this->assertEquals(5, $response['total']);
+    }
 }

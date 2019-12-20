@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div v-for="(reply, index) in items" :key="index">
+    <div v-for="(reply, index) in items" :key="reply.id">
       <reply :data="reply" @deleted="remove(index)" />
     </div>
+    <paginator :dataSet="dataSet" @changed="fetch" />
     <new-reply :endpoint="endpoint" @created="add" />
   </div>
 </template>
@@ -10,28 +11,45 @@
 <script>
 import Reply from "./Reply";
 import NewReply from "./NewReply";
+import Paginator from "./Paginator";
+import Collection from "../mixins/Collection";
 
 export default {
   components: {
     Reply,
-    NewReply
+    NewReply,
+    Paginator
   },
-  props: ["data"],
+
+  mixins: [Collection],
+
   data() {
     return {
-      items: this.data,
+      dataSet: null,
       endpoint: `${location.pathname}/replies`
     };
   },
+
   methods: {
-    add(reply) {
-      this.items.push(reply);
-      this.$emit("added");
+    fetch(page) {
+      if (!page) {
+        const query = location.search.match(/page=(\d+)/);
+
+        page = query ? query[1] : 1;
+      }
+
+      const url = page ? `${this.endpoint}?page=${page}` : this.endpoint;
+
+      axios.get(url).then(this.refresh);
     },
-    remove(index) {
-      this.items.splice(index, 1);
-      this.$emit("removed");
+    refresh({ data }) {
+      this.dataSet = data;
+      this.items = data.data;
     }
+  },
+
+  created() {
+    this.fetch();
   }
 };
 </script>

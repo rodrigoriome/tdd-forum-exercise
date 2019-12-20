@@ -6,7 +6,7 @@
           <a :href="`/profiles/${data.owner.name}`">
             {{ data.owner.name }}
           </a>
-          said {{ data.created_at }}
+          said {{ createdAt }}
         </span>
         <span class="ml-auto" v-if="signedIn">
           <favorite :reply="data" />
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import moment from "moment";
 import Favorite from "./Favorite";
 
 export default {
@@ -60,6 +61,9 @@ export default {
     },
     canUpdate() {
       return this.authorize(user => this.data.user_id == user.id);
+    },
+    createdAt() {
+      return moment(this.data.created_at).fromNow(true) + " ago";
     }
   },
   methods: {

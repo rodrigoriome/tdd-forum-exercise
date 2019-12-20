@@ -26,13 +26,7 @@
                         {{ $thread->body }}
                     </div>
                 </div>
-
-                <replies :data="{{ $thread->replies }}" :channel="{{ $thread->channel }}" @added="repliesCount++"
-                    @removed="repliesCount--">
-                </replies>
-
-                {{-- {{ $replies->links() }} --}}
-
+                <replies :channel="{{ $thread->channel }}" @added="repliesCount++" @removed="repliesCount--" />
             </div>
             <div class="col-md-4">
                 <div class="card">
